@@ -25,7 +25,7 @@ public class ExcelUtil {
             }
             int countRow = 0;
             for(Row row:sheet){
-                if(countRow != importConfig.getStartRow()){
+                if(countRow < importConfig.getStartRow()){
                     countRow++;
                     continue;
                 }
@@ -57,8 +57,9 @@ public class ExcelUtil {
                     // Lấy ô muốn import dữ liệu
                     Cell cell = row.getCell(currentCellConfig.getColumnIndex());
                     if(!ObjectUtils.isEmpty(cell)){
-                        // Thiết lập tất cả các kiểu dữ liệu
+                        // Thiết lập tất cả các kiểu dữ liệu về kiểu string
                         cell.setCellType(CellType.STRING);
+                        // Đọc dữ liệu từ cell truyền ra đối tượng object
                         Object cellValue = cell.getStringCellValue();
                         setFieldValue(instance, field, cellValue);
                     }
@@ -74,10 +75,12 @@ public class ExcelUtil {
         return instance;
     }
 
+    // set dữ liệu từ cell vào đối tượng cụ thể thông qua Field
     private static <T> void setFieldValue(Object instance, Field field, Object cellValue) {
         if(ObjectUtils.isEmpty(instance)||ObjectUtils.isEmpty(field)){
             return;
         }
+        // Xác định kiểu của trường dữ liệu
         Class clazz = field.getType();
         Object valueConverted = parseValueByClass(clazz, cellValue);
         field.setAccessible(true);
@@ -111,7 +114,93 @@ public class ExcelUtil {
         }
         String clazzName = clazz.getSimpleName();
         switch(clazzName){
-
+            case "char":
+                cellValue = parseChar(cellValue);
+                break;
+            case "String":
+                cellValue = cellValue.toString().trim();
+                break;
+            case "boolean":
+            case "Boolean":
+                cellValue = parseBoolean(cellValue);
+                break;
+            case "byte":
+            case "Byte":
+                cellValue = parseByte(cellValue);
+                break;
+            case "short":
+            case "Short":
+                cellValue = parseShort(cellValue);
+                break;
+            case "int":
+            case "Integer":
+                cellValue = parseInteger(cellValue);
+                break;
+            case "long":
+            case "Long":
+                cellValue = parseLong(cellValue);
+                break;
+            case "float":
+            case "Float":
+                cellValue = parseFloat(cellValue);
+                break;
+            case "double":
+            case "Double":
+                cellValue = parseDouble(cellValue);
+                break;
+            case "Date":
+//                cellValue = parseDate(cellValue);
+                break;
+            case "Instant":
+//                cellValue = parseInstant(cellValue);
+                break;
+            case "Enum":
+//                cellValue = parseEnum(cellValue);
+                break;
+            case "Map":
+//                cellValue = parseMap(cellValue);
+                break;
+            case "BigDecimal":
+//                cellValue = parseBigDecimal(cellValue);
+                break;
+            default:
+                break;
         }
+
+        return cellValue;
     }
+
+    private static Object parseChar(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (char)cellValue;
+    }
+
+    private static Object parseBoolean(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Boolean)cellValue;
+    }
+
+    private static Object parseByte(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Byte)cellValue;
+    }
+
+    private static Object parseShort(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Short)cellValue;
+    }
+
+    private static Object parseInteger(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Integer)cellValue;
+    }
+
+    private static Object parseLong(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Long)cellValue;
+    }
+
+    private static Object parseFloat(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Float)cellValue;
+    }
+
+    private static Object parseDouble(Object cellValue) {
+        return ObjectUtils.isEmpty(cellValue) ? null : (Double)cellValue;
+    }
+
+
 }

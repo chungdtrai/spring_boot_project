@@ -4,11 +4,12 @@ import com.chung.jpapaging_demo.dto.CategoryDto;
 import com.chung.jpapaging_demo.entity.Category;
 import com.chung.jpapaging_demo.repository.CategoryRepository;
 import com.chung.jpapaging_demo.service.CategoryService;
-import com.chung.jpapaging_demo.utils.BaseResponse;
-import com.chung.jpapaging_demo.utils.FileFactory;
+import com.chung.jpapaging_demo.utils.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -78,7 +79,28 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public BaseResponse importCategoryData(MultipartFile file) {
+        BaseResponse response = new BaseResponse();
         Workbook workbook = FileFactory.getWorkbookStream(file);
-        return null;
+        List<CategoryImportDto> list = ExcelUtil.getImportData(workbook, ImportConfig.categoryImportConfig);
+        if(!CollectionUtils.isEmpty(list)){
+            saveAllCategory(list);
+            response.setCode(HttpStatus.OK.value());
+            response.setMessage("Import successfull");
+        }else{
+            response.setCode(HttpStatus.BAD_REQUEST.value());
+            response.setMessage("Import failed");
+        }
+        return response;
+    }
+
+    private void saveAllCategory(List<CategoryImportDto> list) {
+        List<Category> categories = list.stream().map(item -> {
+            return Category.builder()
+                    .id(item.getId())
+                    .name(item.getName())
+                    .description(item.getDescription())
+                    .build();
+        }).collect(Collectors.toList());
+        categoryRepository.saveAll(categories);
     }
 }
