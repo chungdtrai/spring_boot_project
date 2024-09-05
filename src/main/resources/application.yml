@@ -22,3 +22,7 @@ spring:
         debug: true
     test-connection: false
     protocol: smtp
+  security:
+    user:
+      name: admin
+      password: 123456

@@ -29,7 +29,7 @@ public class Product {
     @JoinColumn(name = "category_id", referencedColumnName = "category_id")
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
     @JoinTable(name = "product_color",
         joinColumns = @JoinColumn(name = "product_id"),
         inverseJoinColumns = @JoinColumn(name="color_id"))

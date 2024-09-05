@@ -28,5 +28,9 @@ public class GlobalException {
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(InvalidQuantityException.class)
+    public ResponseEntity<String> handleInvalidQuantityException(InvalidQuantityException e) {
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 
 }

@@ -3,8 +3,11 @@ package com.chung.jpapaging_demo.controller;
 import com.chung.jpapaging_demo.dto.ProductDto;
 import com.chung.jpapaging_demo.entity.Product;
 import com.chung.jpapaging_demo.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/product")
 @RequiredArgsConstructor
@@ -42,8 +46,9 @@ public class ProductController {
     }
 
     @GetMapping("/findall")
-    public ResponseEntity<List<ProductDto>> findAll() {
-            return ResponseEntity.ok(productService.findAll());
+    public ResponseEntity<List<ProductDto>> findAll(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        return ResponseEntity.ok(productService.findAll());
     }
 
     @GetMapping("/findAllWithPage")
